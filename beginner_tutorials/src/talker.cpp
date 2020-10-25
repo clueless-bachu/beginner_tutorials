@@ -1,13 +1,16 @@
+/**
+ * @file talker.cpp
+ * @brief This tutorial demonstrates simple sending of messages over the ROS system.
+ * @author Vasista Ayyagari
+ * @copyright Vasista Ayyagari, 2020
+ */
+#include <sstream>
+#include <vector>
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 
-#include <sstream>
 
-/**
- * This tutorial demonstrates simple sending of messages over the ROS system.
- */
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   /**
    * The ros::init() function needs to see argc and argv so that it can perform
    * any ROS arguments and name remapping that were provided at the command line.
@@ -53,15 +56,16 @@ int main(int argc, char **argv)
    * a unique string for each message.
    */
   int count = 0;
-  while (ros::ok())
-  {
+  std::vector<int> prevCounts(3, 0);
+  while (ros::ok()) {
     /**
      * This is a message object. You stuff it with data, and then publish it.
      */
     std_msgs::String msg;
 
     std::stringstream ss;
-    ss << "hello world " << count;
+    ss << "This is a custom string with 3 previous count: "
+    << prevCounts[0] << " " << prevCounts[1] << " " << prevCounts[2];
     msg.data = ss.str();
 
     ROS_INFO("%s", msg.data.c_str());
@@ -78,6 +82,9 @@ int main(int argc, char **argv)
 
     loop_rate.sleep();
     ++count;
+    prevCounts[0] = prevCounts[1];
+    prevCounts[1] = prevCounts[2];
+    prevCounts[2] = count;
   }
 
 
