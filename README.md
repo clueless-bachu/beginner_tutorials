@@ -39,3 +39,20 @@ $ rosrun beginner_tutorials talker
 and 
 $ rosrun beginner_tutorials listener
 ```
+
+## Run ROS launch file
+
+For each new terminal and source the files
+```
+$ source devel/setup/bash
+$ roslaunch beginner_tutorials node.launch freq:=<rate of publishing>
+```
+
+## Run ROS service
+
+With the talker node or the node.launch running, in a new terminal
+```
+$ source devel/setup/bash
+$ rosservice call /AddNums "A:<num1> B:<num2>"
+```
+specify num1 and num2 appropriately
