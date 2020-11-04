@@ -8,6 +8,29 @@
 #include <vector>
 #include "ros/ros.h"
 #include "std_msgs/String.h"
+#include "beginner_tutorials/AddNums.h"
+
+
+std::string stringMsg = "This is the default messsage before service is called";
+
+/** 
+ * @brief A service function that handles AddNums service
+ * @params req: the service request 
+ * @params res: the service response
+ * @return bool
+ */
+bool adder(beginner_tutorials::AddNums::Request  &req,
+         beginner_tutorials::AddNums::Response &res) {
+  res.Sum = req.A + req.B;
+  if (req.A > 100000 || req.B >100000) {
+    ROS_WARN_STREAM("Input numbers for Addition are high");
+  }
+  if (req.A > 2147483640 || req.B >2147483640) {
+    ROS_ERROR_STREAM("Input numbers are close to limits of Int");
+  }
+  stringMsg = "After service call: " + std::to_string(res.Sum);
+  return true;
+}
 
 
 int main(int argc, char **argv) {
@@ -47,9 +70,21 @@ int main(int argc, char **argv) {
    * than we can send them, the number here specifies how many messages to
    * buffer up before throwing some away.
    */
-  ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter", 1000);
 
-  ros::Rate loop_rate(10);
+
+  int freq = std::atoi(argv[1]);
+
+  ROS_DEBUG_STREAM(std::to_string(freq));
+  if (freq < 10) {
+    ROS_WARN_STREAM("frequency is too low for real-time");
+  }
+  if (freq <= 0) {
+    ROS_FATAL_STREAM(std::to_string(freq));
+  }
+  ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter", 10000);
+  auto server = n.advertiseService("AddNums", adder);
+  ROS_INFO_STREAM("Node has started");
+  ros::Rate loop_rate(freq);
 
   /**
    * A count of how many messages we have sent. This is used to create
@@ -61,12 +96,15 @@ int main(int argc, char **argv) {
     /**
      * This is a message object. You stuff it with data, and then publish it.
      */
+    if (freq < 10) {
+      ROS_WARN_STREAM("frequency is too low for real-time");
+    }
+    if (freq <= 0) {
+      ROS_FATAL_STREAM(std::to_string(freq));
+    }
     std_msgs::String msg;
 
-    std::stringstream ss;
-    ss << "This is a custom string with 3 previous count: "
-    << prevCounts[0] << " " << prevCounts[1] << " " << prevCounts[2];
-    msg.data = ss.str();
+    msg.data = stringMsg;
 
     ROS_INFO("%s", msg.data.c_str());
 
