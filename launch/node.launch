@@ -1,6 +1,9 @@
 <launch>
   <arg name = "freq" default = "1" />
+  <arg name = "toRecord" default = "true" />
   <node name="talker" pkg="beginner_tutorials" type="talker" output = "screen"
     args = "$(arg freq)"/>
   <node name="listener" pkg="beginner_tutorials" type="listener" output = "screen"/>
+  <node pkg="rosbag" name="record" type="record" args="--duration=15 -a -O $(find beginner_tutorials)/results/rec.bag"
+  if="$(arg toRecord)"/>
 </launch>
