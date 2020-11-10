@@ -4,6 +4,7 @@
  * @author Vasista Ayyagari
  * @copyright Vasista Ayyagari, 2020
  */
+#include <tf/transform_broadcaster.h>
 #include <sstream>
 #include <vector>
 #include "ros/ros.h"
@@ -71,6 +72,8 @@ int main(int argc, char **argv) {
    * buffer up before throwing some away.
    */
 
+  tf::TransformBroadcaster bc;
+  tf::Transform trans;
 
   int freq = std::atoi(argv[1]);
 
@@ -102,6 +105,13 @@ int main(int argc, char **argv) {
     if (freq <= 0) {
       ROS_FATAL_STREAM(std::to_string(freq));
     }
+
+    trans.setOrigin(tf::Vector3(0.0, 2.0, 4.0));
+    trans.setRotation(
+      tf::Quaternion(0.0640713, 0.0911575, 0.1534393, 0.9818562));
+    bc.sendTransform(
+      tf::StampedTransform(trans, ros::Time::now(), "world", "talk"));
+
     std_msgs::String msg;
 
     msg.data = stringMsg;
